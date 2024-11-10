@@ -4,6 +4,8 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <vector>
+#include <utility>
 #include <iostream>
 #include <iomanip>
 
@@ -16,12 +18,14 @@ class ESPNFantasyAPI
 
 public:
   ESPNFantasyAPI(const std::string &leagueId);
-  std::string get_league_id();
+  std::string get_league_name();
+  std::vector<std::pair<std::string, std::string>> get_league_memebers();
 
 private:
   std::string baseUrl;
   std::string leagueId_;
   std::string leagueName_;
+  std::vector<std::pair<std::string, std::string>> leagueMembers_; // {TEAM_ID, TEAM_ABBREV}
 
   void fetch_league_data();
 };
