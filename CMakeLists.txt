@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 project(StatStarters)
 
 # Specify C++ standard for the target
@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add source files
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/ESPNFantasyAPI.cpp
 )
 
 # Create the executable
@@ -19,14 +20,24 @@ target_include_directories(StatStarters PRIVATE
     ${CURSES_INCLUDE_DIR}
 )
 
-# Add this line before `find_package(cpr REQUIRED)`
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH} /opt/homebrew")  # Adjust path if necessary
-find_package(cpr REQUIRED)
-find_package(nlohmann_json REQUIRED)
+# Include FetchContent module
+include(FetchContent)
 
-# Find and link cpr and nlohmann_json
-find_package(cpr REQUIRED)
-find_package(nlohmann_json REQUIRED)
+# Fetch cpr
+FetchContent_Declare(
+    cpr
+    GIT_REPOSITORY https://github.com/libcpr/cpr.git
+    GIT_TAG 1.10.4  # Replace with the desired version
+)
+FetchContent_MakeAvailable(cpr)
+
+# Fetch nlohmann_json
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2  # Replace with the desired version
+)
+FetchContent_MakeAvailable(nlohmann_json)
 
 # Link libraries to the executable
 target_link_libraries(StatStarters PRIVATE cpr::cpr nlohmann_json::nlohmann_json)
