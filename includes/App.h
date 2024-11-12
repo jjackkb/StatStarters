@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "ESPNFantasyAPI.h"
+#include "Fantasy.h"
 #include "League.h"
 
 class App {
@@ -16,7 +16,7 @@ public:
 
 private:
   std::unique_ptr<League> cur_league_;
-  ESPNFantasyAPI *fantasyApi_;
+  Fantasy *fantasy_;
 };
 
 #endif // APP_H

@@ -1,10 +1,9 @@
 #include "App.h"
 
 App::App()
-    : cur_league_(std::make_unique<League>("2030108269")),
-      fantasyApi_(nullptr) {
+    : cur_league_(std::make_unique<League>("2030108269")), fantasy_(nullptr) {
   if (cur_league_ != nullptr) {
-    fantasyApi_ = new ESPNFantasyAPI(*cur_league_);
+    fantasy_ = new Fantasy(*cur_league_);
   } else {
     throw std::runtime_error("Failed to initialize App: cur_league_ is null.");
   }
@@ -28,4 +27,4 @@ void App::display_league() {
   std::cout << "}" << std::endl;
 }
 
-App::~App() { delete fantasyApi_; }
+App::~App() { delete fantasy_; }
