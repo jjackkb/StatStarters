@@ -8,10 +8,12 @@ Member::Member(std::string &memberId) : memberId_(memberId) {}
 Member::Member(std::string &memberId, std::string &memberAbbrev)
     : memberId_(memberId), memberAbbrev_(memberAbbrev) {}
 
+// setters
 void Member::set_memberId(std::string &memberId) { memberId_ = memberId; }
 void Member::set_memberAbbrev(std::string &memberAbbrev) {
   memberAbbrev_ = memberAbbrev;
 }
 
+// getters
 std::string Member::get_memberId() { return memberId_; }
 std::string Member::get_memberAbbrev() { return memberAbbrev_; }

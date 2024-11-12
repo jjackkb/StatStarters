@@ -3,6 +3,15 @@
 ErrorHandler error_handler_;
 League *league_;
 
+/*
+Converts raw text form of fantasy.espn.api cookie values to URL form
+
+Parameters:
+const string: address of raw text form cookie value
+
+Returns:
+String: cookie value in URL form
+*/
 std::string url_decode(const std::string &encoded) {
   std::ostringstream decoded;
   for (size_t i = 0; i < encoded.length(); ++i) {
@@ -30,13 +39,37 @@ ESPNFantasyAPI::ESPNFantasyAPI(League &league) : league_(&league) {
   fetch_league_data();
 }
 
+/*
+Concatenate BASEURL with leagueId_ to get api url for league info
+
+Returns:
+String: url for league information api call
+*/
 std::string ESPNFantasyAPI::construct_url() {
   return BASEURL + league_->get_leagueId();
 }
+/*
+Concatenate BASEURL, leagueId_ and options to get api url
+
+Parameters:
+String: end of url options, ex: "?view=mRoster" to view total league roster
+
+Returns:
+String: url for api call
+*/
 std::string ESPNFantasyAPI::construct_url(std::string &options) {
   return BASEURL + league_->get_leagueId() + options;
 }
 
+/*
+Make request for string url
+
+Parameters:
+String: full url for api call
+
+Returns:
+cpr::Response: from api call
+*/
 cpr::Response ESPNFantasyAPI::make_request(const std::string &url) {
   cpr::Response r =
       cpr::Get(cpr::Url{url}, cpr::Cookies{{"espn_s2", url_decode(ESPN_S2)},
@@ -49,78 +82,101 @@ cpr::Response ESPNFantasyAPI::make_request(const std::string &url) {
   return r;
 }
 
-void ESPNFantasyAPI::parse_seasonId(const nlohmann::json &json) {
-  if (json.contains("seasonId")) {
-    if (json["seasonId"].is_string()) {
-      league_->set_seasonId(json["seasonId"].get<std::string>());
-    } else if (json["seasonId"].is_number()) {
-      league_->set_seasonId(std::to_string(json["seasonId"].get<int>()));
-    } else {
-      error_handler_.logError("Warning: 'seasonId' is of an unexpected type.");
-    }
+/*
+Retrieve value of key from json response
+
+Parameters:
+nlohmann::json json: api request JSON response
+String key: key to look for
+
+Returns:
+optional String: value of key from json response
+*/
+std::optional<std::string>
+ESPNFantasyAPI::parseStringOrIntField(const nlohmann::json &json,
+                                      const std::string &key) {
+  if (!json.contains(key)) {
+    error_handler_.logError("Warning: '" + key +
+                            "' key missing in JSON response.");
+    return std::nullopt;
+  }
+
+  if (json[key].is_string()) {
+    return json[key].get<std::string>();
+  } else if (json[key].is_number()) {
+    return std::to_string(json[key].get<int>());
   } else {
-    error_handler_.logError("Warning:'seasonId' key "
-                            "missing in JSON response.");
+    error_handler_.logError("Warning: '" + key + "' is of an unexpected type.");
+    return std::nullopt;
+  }
+}
+
+/*
+Retrieve value of nested key from json response
+
+Parameters:
+nlohmmann::json json: api request JSON response
+String parent: parent key from JSON resposne
+String child: child key from JSON response
+
+Returns:
+optional String: value of nested key from json response
+*/
+std::optional<std::string>
+ESPNFantasyAPI::parseNestedField(const nlohmann::json &json,
+                                 const std::string &parent,
+                                 const std::string &child) {
+  if (json.contains(parent) && json[parent].contains(child)) {
+    return json[parent][child].get<std::string>();
+  } else {
+    error_handler_.logError("Warning: '" + parent + "' or '" + child +
+                            "' key missing in JSON response.");
+    return std::nullopt;
+  }
+}
+
+void ESPNFantasyAPI::parse_seasonId(const nlohmann::json &json) {
+  auto seasonId = parseStringOrIntField(json, "seasonId");
+  if (seasonId) {
+    league_->set_seasonId(*seasonId);
   }
 }
 void ESPNFantasyAPI::parse_scoringPeriodId(const nlohmann::json &json) {
-  if (json.contains("scoringPeriodId")) {
-    if (json["scoringPeriodId"].is_string()) {
-      league_->set_scoringPeriodId(json["scoringPeriodId"].get<std::string>());
-    } else if (json["scoringPeriodId"].is_number()) {
-      league_->set_scoringPeriodId(
-          std::to_string(json["scoringPeriodId"].get<int>()));
+  auto scoringPeriodId = parseStringOrIntField(json, "scoringPeriodId");
+  if (scoringPeriodId) {
+    league_->set_scoringPeriodId(*scoringPeriodId);
+  }
+}
+void ESPNFantasyAPI::parse_leagueName(const nlohmann::json &json) {
+  auto leagueName = parseNestedField(json, "settings", "name");
+  if (leagueName) {
+    league_->set_leagueName(*leagueName);
+  }
+}
+void ESPNFantasyAPI::parse_leagueMembers(const nlohmann::json &json) {
+  if (!json.contains("teams")) {
+    error_handler_.logError("Warning: 'teams' key missing in JSON response.");
+    return;
+  }
+
+  for (const auto &team : json["teams"]) {
+    std::string id_str;
+    auto teamId = parseStringOrIntField(team, "id");
+    if (teamId) {
+      id_str = *teamId;
+    }
+
+    if (team.contains("abbrev") && team["abbrev"].is_string()) {
+      std::string abbrev = team["abbrev"].get<std::string>();
+      league_->add_leagueMember(Member(id_str, abbrev));
     } else {
       error_handler_.logError(
-          "Warning: 'scoringPeriodId' is of an unexpected type.");
+          "Warning: 'abbrev' key missing in JSON response.");
     }
-  } else {
-    error_handler_.logError("Warning: 'settings' or 'scoringPeriodId' key "
-                            "missing in JSON response.");
-  }
-};
-void ESPNFantasyAPI::parse_leagueName(const nlohmann::json &json) {
-  if (json.contains("settings") && json["settings"].contains("name")) {
-    league_->set_leagueName(json["settings"]["name"].get<std::string>());
-
-  } else {
-    error_handler_.logError(
-        "Warning: 'settings' or 'name' key missing in JSON response.");
-  }
-};
-void ESPNFantasyAPI::parse_leagueMembers(const nlohmann::json &json) {
-  if (json.contains("teams")) {
-    for (const auto &team : json["teams"]) {
-      std::string id_str;
-      if (team.contains("id")) {
-        if (team["id"].is_string()) {
-          id_str = team["id"].get<std::string>();
-        } else if (team["id"].is_number()) {
-          id_str = std::to_string(team["id"].get<int>());
-        } else {
-          error_handler_.logError("Warning: 'id' is of an unexpected type.");
-        }
-      }
-
-      if (team.contains("abbrev") && team["abbrev"].is_string()) {
-        std::string abbrev = team["abbrev"].get<std::string>();
-
-        league_->add_leagueMember(Member(id_str, abbrev));
-      } else {
-        error_handler_.logError("Warning: 'abbrev' key missing or not a "
-                                "string for a team in JSON response.");
-      }
-    }
-  } else {
-    error_handler_.logError("Warning: 'teams' key missing in JSON response.");
   }
 }
 
 void ESPNFantasyAPI::fetch_league_data() {
-  /* DEBUG
-  std::cout << construct_url() << std::endl;
-  // */
-
   cpr::Response r = make_request(construct_url());
 
   try {

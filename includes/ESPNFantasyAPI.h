@@ -41,6 +41,11 @@ private:
   void fetch_league_data();
   std::string construct_url();
   std::string construct_url(std::string &);
+  std::optional<std::string> parseStringOrIntField(const nlohmann::json &json,
+                                                   const std::string &key);
+  std::optional<std::string> parseNestedField(const nlohmann::json &json,
+                                              const std::string &parent,
+                                              const std::string &child);
   void parse_seasonId(const nlohmann::json &json);
   void parse_scoringPeriodId(const nlohmann::json &json);
   void parse_leagueName(const nlohmann::json &json);
