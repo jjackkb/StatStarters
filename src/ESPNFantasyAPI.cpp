@@ -1,129 +1,145 @@
 #include "ESPNFantasyAPI.h"
 
-std::string espn_s2 = "AEAuQPHDCe1hmHENca5DlLwqkOfMmg9QwnkubRLTvzHPN31qzhBnrDfBxLWC32TQaUiqKCdEtsiUFlPdQNnlf%2BVKj%2FViaJwqU2XaK6PVtwFwtU1LwE0XOpZfn3u%2FuKCg8guDZUmhlvtPGGu0RNMbhy1Qr9GFBGUMNPk%2BcipleF9uyCc6kRVQ1vNrtBZsmTsG27CFpJTmPZI%2BWpTkOsDhjDrKv6kHrTEOu8Hj0Xn9XUi1uL9Ctt9l60Uhlqqx9hx2WUidSZKgeC1NZHMi0z2Jd9y22QxB5PTgk%2Ffz28Ob3klAFVvjTHEuvKTEjqlRyY48fk0%3D";
-std::string SWID = "{A64813BD-1E7D-47C5-9E17-A7B7756D49DF}";
-std::string leagueId_;
-std::string leagueName_;
-std::vector<std::pair<std::string, std::string>> leagueMembers_; // {TEAM_ID, TEAM_ABBREV}
+ErrorHandler error_handler_;
+League *league_;
 
-std::string url_decode(const std::string &encoded)
-{
+std::string url_decode(const std::string &encoded) {
   std::ostringstream decoded;
-  for (size_t i = 0; i < encoded.length(); ++i)
-  {
-    if (encoded[i] == '%' && i + 2 < encoded.length())
-    {
+  for (size_t i = 0; i < encoded.length(); ++i) {
+    if (encoded[i] == '%' && i + 2 < encoded.length()) {
       std::istringstream hexStream(encoded.substr(i + 1, 2));
       int hexValue;
-      if (hexStream >> std::hex >> hexValue)
-      {
+      if (hexStream >> std::hex >> hexValue) {
         decoded << static_cast<char>(hexValue);
         i += 2;
-      }
-      else
-      {
+      } else {
         decoded << '%';
       }
-    }
-    else if (encoded[i] == '+')
-    {
+    } else if (encoded[i] == '+') {
       decoded << ' ';
-    }
-    else
-    {
+    } else {
       decoded << encoded[i];
     }
   }
   return decoded.str();
 }
 
-ESPNFantasyAPI::ESPNFantasyAPI(const std::string &leagueId)
-    : leagueId_(leagueId)
-{
+ESPNFantasyAPI::ESPNFantasyAPI(League &league) : league_(&league) {
+  std::string espn_s2_ = ESPN_S2;
+  std::string swid_ = SWID;
   fetch_league_data();
 }
 
-void ESPNFantasyAPI::fetch_league_data()
-{
-  std::string url = BASEURL + leagueId_;
-  cpr::Response r = cpr::Get(cpr::Url{url},
-                             cpr::Cookies{
-                                 {"SWID", url_decode(SWID)},
-                                 {"espn_s2", url_decode(espn_s2)}});
+std::string ESPNFantasyAPI::construct_url() {
+  return BASEURL + league_->get_leagueId();
+}
+std::string ESPNFantasyAPI::construct_url(std::string &options) {
+  return BASEURL + league_->get_leagueId() + options;
+}
 
-  try
-  {
-    if (r.status_code == 200)
-    {
-      auto json = nlohmann::json::parse(r.text);
+cpr::Response ESPNFantasyAPI::make_request(const std::string &url) {
+  cpr::Response r =
+      cpr::Get(cpr::Url{url}, cpr::Cookies{{"espn_s2", url_decode(ESPN_S2)},
+                                           {"SWID", url_decode(SWID)}});
 
-      if (json.contains("settings") && json["settings"].contains("name"))
-      {
-        leagueName_ = json["settings"]["name"].get<std::string>();
-      }
-      else
-      {
-        std::cerr << "Warning: 'settings' or 'name' key missing in JSON response.\n";
-      }
+  if (r.status_code == 401) {
+    error_handler_.logError("Error accessing API. Failed authentication.");
+    error_handler_.logError(r.text);
+  }
+  return r;
+}
 
-      if (json.contains("teams"))
-      {
-        for (const auto &team : json["teams"])
-        {
-          std::string id_str;
-          if (team.contains("id"))
-          {
-            if (team["id"].is_string())
-            {
-              id_str = team["id"].get<std::string>();
-            }
-            else if (team["id"].is_number())
-            {
-              id_str = std::to_string(team["id"].get<int>());
-            }
-            else
-            {
-              std::cerr << "Warning: 'id' is of an unexpected type.\n";
-            }
-          }
+void ESPNFantasyAPI::parse_seasonId(const nlohmann::json &json) {
+  if (json.contains("seasonId")) {
+    if (json["seasonId"].is_string()) {
+      league_->set_seasonId(json["seasonId"].get<std::string>());
+    } else if (json["seasonId"].is_number()) {
+      league_->set_seasonId(std::to_string(json["seasonId"].get<int>()));
+    } else {
+      error_handler_.logError("Warning: 'seasonId' is of an unexpected type.");
+    }
+  } else {
+    error_handler_.logError("Warning:'seasonId' key "
+                            "missing in JSON response.");
+  }
+}
+void ESPNFantasyAPI::parse_scoringPeriodId(const nlohmann::json &json) {
+  if (json.contains("scoringPeriodId")) {
+    if (json["scoringPeriodId"].is_string()) {
+      league_->set_scoringPeriodId(json["scoringPeriodId"].get<std::string>());
+    } else if (json["scoringPeriodId"].is_number()) {
+      league_->set_scoringPeriodId(
+          std::to_string(json["scoringPeriodId"].get<int>()));
+    } else {
+      error_handler_.logError(
+          "Warning: 'scoringPeriodId' is of an unexpected type.");
+    }
+  } else {
+    error_handler_.logError("Warning: 'settings' or 'scoringPeriodId' key "
+                            "missing in JSON response.");
+  }
+};
+void ESPNFantasyAPI::parse_leagueName(const nlohmann::json &json) {
+  if (json.contains("settings") && json["settings"].contains("name")) {
+    league_->set_leagueName(json["settings"]["name"].get<std::string>());
 
-          if (team.contains("abbrev") && team["abbrev"].is_string())
-          {
-            std::string abbrev = team["abbrev"].get<std::string>();
-            leagueMembers_.emplace_back(id_str, abbrev);
-          }
-          else
-          {
-            std::cerr << "Warning: 'abbrev' key missing or not a string for a team in JSON response.\n";
-          }
+  } else {
+    error_handler_.logError(
+        "Warning: 'settings' or 'name' key missing in JSON response.");
+  }
+};
+void ESPNFantasyAPI::parse_leagueMembers(const nlohmann::json &json) {
+  if (json.contains("teams")) {
+    for (const auto &team : json["teams"]) {
+      std::string id_str;
+      if (team.contains("id")) {
+        if (team["id"].is_string()) {
+          id_str = team["id"].get<std::string>();
+        } else if (team["id"].is_number()) {
+          id_str = std::to_string(team["id"].get<int>());
+        } else {
+          error_handler_.logError("Warning: 'id' is of an unexpected type.");
         }
       }
-      else
-      {
-        std::cerr << "Warning: 'teams' key missing in JSON response.\n";
+
+      if (team.contains("abbrev") && team["abbrev"].is_string()) {
+        std::string abbrev = team["abbrev"].get<std::string>();
+
+        league_->add_leagueMember(Member(id_str, abbrev));
+      } else {
+        error_handler_.logError("Warning: 'abbrev' key missing or not a "
+                                "string for a team in JSON response.");
       }
     }
-    else
-    {
-      std::cerr << "Failed to fetch league data. Status code: " << r.status_code << std::endl;
+  } else {
+    error_handler_.logError("Warning: 'teams' key missing in JSON response.");
+  }
+}
+
+void ESPNFantasyAPI::fetch_league_data() {
+  /* DEBUG
+  std::cout << construct_url() << std::endl;
+  // */
+
+  cpr::Response r = make_request(construct_url());
+
+  try {
+    if (r.status_code == 200) {
+      auto json = nlohmann::json::parse(r.text);
+
+      parse_seasonId(json);
+      parse_scoringPeriodId(json);
+      parse_leagueName(json);
+      parse_leagueMembers(json);
+
+    } else {
+      error_handler_.logError("Failed to fetch league data. Status code: " +
+                              std::to_string(r.status_code));
+      std::cout << r.text << std::endl;
     }
+  } catch (const nlohmann::json::exception &e) {
+    error_handler_.logError(ErrorHandler::ErrorCode::DATA_PARSE_ERROR, "");
+  } catch (const std::exception &e) {
+    error_handler_.logError(ErrorHandler::ErrorCode::UNKNOWN_ERROR, "");
   }
-  catch (const nlohmann::json::exception &e)
-  {
-    std::cerr << "JSON parsing error: " << e.what() << std::endl;
-  }
-  catch (const std::exception &e)
-  {
-    std::cerr << "Unexpected error: " << e.what() << std::endl;
-  }
-}
-
-std::string ESPNFantasyAPI::get_league_name()
-{
-  return leagueName_;
-}
-
-std::vector<std::pair<std::string, std::string>> ESPNFantasyAPI::get_league_memebers()
-{
-  return leagueMembers_;
 }

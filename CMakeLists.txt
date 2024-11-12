@@ -8,8 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add source files
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/App.cpp
+    ${CMAKE_SOURCE_DIR}/src/ErrorHandler.cpp 
     ${CMAKE_SOURCE_DIR}/src/ESPNFantasyAPI.cpp
-)
+    ${CMAKE_SOURCE_DIR}/src/League.cpp
+    ${CMAKE_SOURCE_DIR}/src/Member.cpp
+    )
 
 # Create the executable
 add_executable(StatStarters ${SOURCES})
@@ -40,4 +44,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nlohmann_json)
 
 # Link libraries to the executable
-target_link_libraries(StatStarters PRIVATE cpr::cpr nlohmann_json::nlohmann_json)
+find_library(CORESERVICES CoreServices)
+target_link_libraries(StatStarters PRIVATE cpr::cpr nlohmann_json::nlohmann_json ${CORESERVICES})
