@@ -25,11 +25,11 @@ std::string url_decode(const std::string &encoded);
 
 cpr::Response make_request(const std::string &);
 std::string construct_url(std::string);
-std::string construct_url(std::string, std::string &);
-std::optional<std::string> parseStringOrIntField(const nlohmann::json &json,
-                                                 const std::string &key);
-std::optional<std::string> parseNestedField(const nlohmann::json &json,
-                                            const std::string &parent,
-                                            const std::string &child);
+std::string construct_url(std::string, std::string);
+std::string parseStringOrIntField(const nlohmann::json &json,
+                                  const std::string &key);
+std::string parseNestedField(const nlohmann::json &json,
+                             const std::string &parent,
+                             const std::string &child);
 
 #endif // API_H

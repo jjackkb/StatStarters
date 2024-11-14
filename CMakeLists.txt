@@ -12,8 +12,9 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/FantasyApi/Api.cpp 
     ${CMAKE_SOURCE_DIR}/src/App.cpp
     ${CMAKE_SOURCE_DIR}/src/ErrorHandler.cpp 
-    ${CMAKE_SOURCE_DIR}/src/League.cpp
-    ${CMAKE_SOURCE_DIR}/src/Member.cpp
+    ${CMAKE_SOURCE_DIR}/src/Objects/League.cpp
+    ${CMAKE_SOURCE_DIR}/src/Objects/Member.cpp
+    ${CMAKE_SOURCE_DIR}/src/Objects/Player.cpp
     )
 
 # Create the executable

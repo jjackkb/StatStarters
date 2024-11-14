@@ -20,11 +20,23 @@ void App::display_league() {
                        cur_league_->get_scoringPeriodId() + "\n";
 
   std::cout << output << std::endl;
-  for (Member m : cur_league_->get_leagueMembers()) {
-    std::cout << "  { " + m.get_memberAbbrev() + " - " + m.get_memberId() + " }"
+  for (const Member &m : cur_league_->get_leagueMembers()) {
+    std::cout << "  { " + m.get_memberAbbrev() + " - " + m.get_memberId()
               << std::endl;
+    std::cout << display_players(m) << std::endl;
   }
   std::cout << "}" << std::endl;
+}
+
+std::string App::display_players(const Member &member) {
+  std::string output = "   {\n";
+  for (Player player : member.get_roster()) {
+    output +=
+        "    " + player.get_playerName() + " - " + player.get_playerId() + "\n";
+  }
+  output += "   }\n  }";
+
+  return output;
 }
 
 App::~App() { delete fantasy_; }

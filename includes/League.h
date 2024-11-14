@@ -14,12 +14,12 @@ public:
   void set_seasonId(const std::string &);
   void set_scoringPeriodId(const std::string &);
   void set_leagueName(const std::string &);
-  void add_leagueMember(Member);
+  void add_leagueMember(const Member &);
   std::string get_leagueId();
   std::string get_seasonId();
   std::string get_scoringPeriodId();
   std::string get_leagueName();
-  std::vector<Member> get_leagueMembers();
+  std::vector<Member> &get_leagueMembers();
 
 private:
   std::string leagueId_;

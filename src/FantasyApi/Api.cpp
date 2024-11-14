@@ -42,7 +42,7 @@ std::string construct_url(std::string leagueId) {
   return BASEURL + leagueId;
 }
 
-std::string construct_url(std::string leagueId, std::string &options) {
+std::string construct_url(std::string leagueId, std::string options) {
   /*
   Concatenate BASEURL, leagueId_ and options to get api url
 
@@ -53,7 +53,7 @@ std::string construct_url(std::string leagueId, std::string &options) {
   String: url for api call
   */
 
-  return BASEURL + leagueId + "/" + options;
+  return BASEURL + leagueId + options;
 }
 
 cpr::Response make_request(const std::string &url) {
@@ -78,8 +78,8 @@ cpr::Response make_request(const std::string &url) {
   return r;
 }
 
-std::optional<std::string> parseStringOrIntField(const nlohmann::json &json,
-                                                 const std::string &key) {
+std::string parseStringOrIntField(const nlohmann::json &json,
+                                  const std::string &key) {
   /*
   Retrieve value of key from json response
 
@@ -93,7 +93,7 @@ std::optional<std::string> parseStringOrIntField(const nlohmann::json &json,
 
   if (!json.contains(key)) {
     logError("Warning: '" + key + "' key missing in JSON response.");
-    return std::nullopt;
+    return "NULL";
   }
 
   if (json[key].is_string()) {
@@ -102,13 +102,13 @@ std::optional<std::string> parseStringOrIntField(const nlohmann::json &json,
     return std::to_string(json[key].get<int>());
   } else {
     logError("Warning: '" + key + "' is of an unexpected type.");
-    return std::nullopt;
+    return "NULL";
   }
 }
 
-std::optional<std::string> parseNestedField(const nlohmann::json &json,
-                                            const std::string &parent,
-                                            const std::string &child) {
+std::string parseNestedField(const nlohmann::json &json,
+                             const std::string &parent,
+                             const std::string &child) {
   /*
   Retrieve value of nested key from json response
 
@@ -126,6 +126,6 @@ std::optional<std::string> parseNestedField(const nlohmann::json &json,
   } else {
     logError("Warning: '" + parent + "' or '" + child +
              "' key missing in JSON response.");
-    return std::nullopt;
+    return "NULL";
   }
 }

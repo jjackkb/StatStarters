@@ -19,7 +19,7 @@ void League::set_scoringPeriodId(const std::string &scoringPeriodId) {
 void League::set_leagueName(const std::string &leagueName) {
   leagueName_ = leagueName;
 }
-void League::add_leagueMember(Member member) {
+void League::add_leagueMember(const Member &member) {
   leagueMembers_.emplace_back(member);
 }
 
@@ -36,4 +36,4 @@ std::string League::get_scoringPeriodId() {
 std::string League::get_leagueName() {
   return leagueName_.empty() ? "NULL" : leagueName_;
 }
-std::vector<Member> League::get_leagueMembers() { return leagueMembers_; }
+std::vector<Member> &League::get_leagueMembers() { return leagueMembers_; }

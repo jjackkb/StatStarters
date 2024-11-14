@@ -15,6 +15,7 @@ private:
   void parse_scoringPeriodId(const nlohmann::json &json);
   void parse_leagueName(const nlohmann::json &json);
   void parse_leagueMembers(const nlohmann::json &json);
+  void parse_players(const nlohmann::json &json);
 };
 
 #endif // FANTASY_H

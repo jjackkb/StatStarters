@@ -2,6 +2,9 @@
 #define MEMBER_H
 
 #include <string>
+#include <vector>
+
+#include "Player.h"
 
 class Member {
 public:
@@ -10,12 +13,15 @@ public:
   Member(std::string &, std::string &);
   void set_memberId(std::string &);
   void set_memberAbbrev(std::string &);
-  std::string get_memberId();
-  std::string get_memberAbbrev();
+  void add_player(Player player);
+  std::string get_memberId() const;
+  std::string get_memberAbbrev() const;
+  std::vector<Player> get_roster() const;
 
 private:
   std::string memberId_;
   std::string memberAbbrev_;
+  std::vector<Player> memberRoster_;
 };
 
 #endif // MEMBER_H

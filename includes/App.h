@@ -13,6 +13,7 @@ public:
   App();
   ~App();
   void display_league();
+  std::string display_players(const Member &);
 
 private:
   std::unique_ptr<League> cur_league_;
