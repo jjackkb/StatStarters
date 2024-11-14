@@ -98,6 +98,8 @@ std::string parseStringOrIntField(const nlohmann::json &json,
 
   if (json[key].is_string()) {
     return json[key].get<std::string>();
+  } else if (json[key].is_number_float()) {
+    return std::to_string(json[key].get<float>());
   } else if (json[key].is_number()) {
     return std::to_string(json[key].get<int>());
   } else {
@@ -122,10 +124,15 @@ std::string parseNestedField(const nlohmann::json &json,
   */
 
   if (json.contains(parent) && json[parent].contains(child)) {
-    return json[parent][child].get<std::string>();
+    if (json[parent][child].is_string()) {
+      return json[parent][child].get<std::string>();
+    } else if (json[parent][child].is_number()) {
+      return std::to_string(json[parent][child].get<int>());
+    }
   } else {
     logError("Warning: '" + parent + "' or '" + child +
              "' key missing in JSON response.");
     return "NULL";
   }
+  return "NULL";
 }

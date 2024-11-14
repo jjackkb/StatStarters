@@ -86,6 +86,18 @@ void Fantasy::parse_players(const nlohmann::json &json) {
           Player mPlayer = Player(playerId);
           mPlayer.set_playerName(
               parseNestedField(playerInfo, "player", "fullName"));
+          mPlayer.set_playerPos(
+              parseNestedField(playerInfo, "player", "defaultPositionId"));
+          for (const auto &stat : playerInfo["player"]["stats"]) {
+            if (parseStringOrIntField(stat, "seasonId") ==
+                    league_->get_seasonId() &&
+                parseStringOrIntField(stat, "scoringPeriodId") ==
+                    league_->get_scoringPeriodId() &&
+                parseStringOrIntField(stat, "statSourceId") == "1") {
+              auto playerProj = parseStringOrIntField(stat, "appliedTotal");
+              mPlayer.set_playerProj(playerProj);
+            }
+          }
           member.add_player(mPlayer);
         }
       }

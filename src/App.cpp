@@ -12,16 +12,17 @@ App::App()
 }
 
 void App::display_league() {
-  std::string output = "{ " + cur_league_->get_leagueId() + " - " +
-                       cur_league_->get_leagueName() + "\n" +
-                       " season: " + cur_league_->get_seasonId() +
-                       "\n"
-                       " scoring period: " +
-                       cur_league_->get_scoringPeriodId() + "\n";
+  std::ostringstream output;
+  output << "{ " << cur_league_->get_leagueId() << " - "
+         << cur_league_->get_leagueName()
+         << "\n season: " << cur_league_->get_seasonId()
+         << "\n scoring period: " << cur_league_->get_scoringPeriodId() << "\n";
 
-  std::cout << output << std::endl;
-  for (const Member &m : cur_league_->get_leagueMembers()) {
-    std::cout << "  { " + m.get_memberAbbrev() + " - " + m.get_memberId()
+  std::cout << output.str() << std::endl;
+
+  const auto &league_members = cur_league_->get_leagueMembers();
+  for (const Member &m : league_members) {
+    std::cout << "  { " << m.get_memberAbbrev() << " - " << m.get_memberId()
               << std::endl;
     std::cout << display_players(m) << std::endl;
   }
@@ -29,14 +30,18 @@ void App::display_league() {
 }
 
 std::string App::display_players(const Member &member) {
-  std::string output = "   {\n";
-  for (Player player : member.get_roster()) {
-    output +=
-        "    " + player.get_playerName() + " - " + player.get_playerId() + "\n";
-  }
-  output += "   }\n  }";
+  std::ostringstream output;
+  output << "   {\n";
 
-  return output;
+  for (Player &player : member.get_roster()) {
+    output << "    " << player.get_playerName() << " (" << player.get_playerId()
+           << ")"
+           << "\n      Position: " << player.get_playerPos()
+           << "\n      Projected: " << player.get_playerProj() << "\n";
+  }
+
+  output << "   }\n  }";
+  return output.str();
 }
 
 App::~App() { delete fantasy_; }
