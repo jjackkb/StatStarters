@@ -12,7 +12,6 @@
 class App {
 public:
   App();
-  ~App();
   void display_league();
   std::string display_players(const Member &);
 

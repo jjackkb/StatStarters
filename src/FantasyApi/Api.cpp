@@ -1,15 +1,7 @@
 #include "Api.h"
 
 std::string url_decode(const std::string &encoded) {
-  /*
-  Converts raw text form of fantasy.espn.api cookie values to URL form
-
-  Parameters:
-  const string: address of raw text form cookie value
-
-  Returns:
-  String: cookie value in URL form
-  */
+  /* converts raw text form of fantasy.espn.api cookie values to URL form */
 
   std::ostringstream decoded;
   for (size_t i = 0; i < encoded.length(); ++i) {
@@ -32,40 +24,19 @@ std::string url_decode(const std::string &encoded) {
 }
 
 std::string construct_url(std::string leagueId) {
-  /*
-  Concatenate BASEURL with leagueId_ to get api url for league info
-
-  Returns:
-  String: url for league information api call
-  */
+  /* concatenate BASEURL with leagueId_ to get api url for league info */
 
   return BASEURL + leagueId;
 }
 
 std::string construct_url(std::string leagueId, std::string options) {
-  /*
-  Concatenate BASEURL, leagueId_ and options to get api url
-
-  Parameters:
-  String: end of url options, ex: "?view=mRoster" to view total league roster
-
-  Returns:
-  String: url for api call
-  */
+  /* concatenate BASEURL, leagueId_ and options to get api url */
 
   return BASEURL + leagueId + options;
 }
 
 cpr::Response make_request(const std::string &url) {
-  /*
-  Make request for string url
-
-  Parameters:
-  String: full url for api call
-
-  Returns:
-  cpr::Response: from api call
-  */
+  /* make request for string url */
 
   cpr::Response r =
       cpr::Get(cpr::Url{url}, cpr::Cookies{{"espn_s2", url_decode(ESPN_S2)},
@@ -80,16 +51,7 @@ cpr::Response make_request(const std::string &url) {
 
 std::string parseStringOrIntField(const nlohmann::json &json,
                                   const std::string &key) {
-  /*
-  Retrieve value of key from json response
-
-  Parameters:
-  nlohmann::json json: api request JSON response
-  String key: key to look for
-
-  Returns:
-  optional String: value of key from json response
-  */
+  /* retrieve value of key from json response */
 
   if (!json.contains(key)) {
     logError("Warning: '" + key + "' key missing in JSON response.");
@@ -111,17 +73,7 @@ std::string parseStringOrIntField(const nlohmann::json &json,
 std::string parseNestedField(const nlohmann::json &json,
                              const std::string &parent,
                              const std::string &child) {
-  /*
-  Retrieve value of nested key from json response
-
-  Parameters:
-  nlohmmann::json json: api request JSON response
-  String parent: parent key from JSON resposne
-  String child: child key from JSON response
-
-  Returns:
-  optional String: value of nested key from json response
-  */
+  /* retrieve value of nested key from json response\ */
 
   if (json.contains(parent) && json[parent].contains(child)) {
     if (json[parent][child].is_string()) {

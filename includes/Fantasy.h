@@ -11,11 +11,15 @@ public:
 private:
   League *league_;
 
-  void parse_seasonId(const nlohmann::json &json);
-  void parse_scoringPeriodId(const nlohmann::json &json);
-  void parse_leagueName(const nlohmann::json &json);
-  void parse_leagueMembers(const nlohmann::json &json);
-  void parse_players(const nlohmann::json &json);
+  void parse_seasonId(const nlohmann::json &);
+  void parse_scoringPeriodId(const nlohmann::json &);
+  void parse_leagueName(const nlohmann::json &);
+  void parse_leagueMembers(const nlohmann::json &);
+  void parse_teams(const nlohmann::json &);
+  void parse_team(const nlohmann::json &);
+  void parse_roster(const nlohmann::json &, Member &);
+  void parse_player(const nlohmann::json &, Member &);
+  void parse_playerStats(const nlohmann::json &, Player &);
 };
 
 #endif // FANTASY_H

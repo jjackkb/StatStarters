@@ -37,11 +37,15 @@ std::string App::display_players(const Member &member) {
     output << "    " << player.get_playerName() << " (" << player.get_playerId()
            << ")"
            << "\n      Position: " << player.get_playerPos()
-           << "\n      Projected: " << player.get_playerProj() << "\n";
+           << "\n      Lineup slot: " << player.get_playerLineupPos()
+           << "\n      Projected: " << player.get_playerProj()
+           << "\n      Average: " << player.get_playerAvg() << "\n\n";
+  }
+  std::string result = output.str();
+  if (!result.empty() && result.back() == '\n') {
+    result.pop_back(); // Removes the last '\n'
   }
 
-  output << "   }\n  }";
-  return output.str();
+  result += "   }\n  }";
+  return result;
 }
-
-App::~App() { delete fantasy_; }

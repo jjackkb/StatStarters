@@ -3,6 +3,7 @@
 League *league_;
 
 Fantasy::Fantasy(League &league) : league_(&league) {
+  /* sends request to espn fantasy api, parses various keys*/
   auto r = make_request(construct_url(league_->get_leagueId()));
   auto p =
       make_request(construct_url(league_->get_leagueId(), "?view=mRoster"));
@@ -10,13 +11,13 @@ Fantasy::Fantasy(League &league) : league_(&league) {
   try {
     if (r.status_code == 200) {
       auto json = nlohmann::json::parse(r.text);
-      auto playerJson = nlohmann::json::parse(p.text);
+      auto rosterJson = nlohmann::json::parse(p.text);
 
       parse_seasonId(json);
       parse_scoringPeriodId(json);
       parse_leagueName(json);
       parse_leagueMembers(json);
-      parse_players(playerJson);
+      parse_teams(rosterJson);
 
     } else {
       logError("Failed to fetch league data. Status code: " +
@@ -49,6 +50,8 @@ void Fantasy::parse_leagueName(const nlohmann::json &json) {
   }
 }
 void Fantasy::parse_leagueMembers(const nlohmann::json &json) {
+  /* loop through all members in league, parse and set team id and abbreviation.
+   * creates Member object for each team */
   if (!json.contains("teams")) {
     logError("Warning: 'teams' key missing in JSON response.");
     return;
@@ -69,37 +72,60 @@ void Fantasy::parse_leagueMembers(const nlohmann::json &json) {
     }
   }
 }
-void Fantasy::parse_players(const nlohmann::json &json) {
+void Fantasy::parse_teams(const nlohmann::json &json) {
+  /* verify teams key exists loop through team rosters, orchastrates parsing */
   if (!json.contains("teams")) {
     logError("Warning: 'teams' key missing in JSON response.");
     return;
   }
 
   for (const auto &team : json["teams"]) {
-    std::string teamId = parseStringOrIntField(team, "id");
-    for (Member &member : league_->get_leagueMembers()) {
-      if (member.get_memberId() == teamId) {
-        for (const auto &player : team["roster"]["entries"]) {
-          auto &playerInfo = player["playerPoolEntry"];
-          auto playerId = parseStringOrIntField(player, "playerId");
+    parse_team(team);
+  }
+}
+void Fantasy::parse_team(const nlohmann::json &team) {
+  /* verify member id matches found team id, calls roster-specific parsing */
+  std::string teamId = parseStringOrIntField(team, "id");
+  for (Member &member : league_->get_leagueMembers()) {
+    if (member.get_memberId() == teamId) {
+      parse_roster(team["roster"]["entries"], member);
+    }
+  }
+}
+void Fantasy::parse_roster(const nlohmann::json &entries, Member &member) {
+  /* iterates through players in roster, calls player-specific parsing */
+  for (const auto &player : entries) {
+    parse_player(player, member);
+  }
+}
+void Fantasy::parse_player(const nlohmann::json &playerJson, Member &member) {
+  /* parses entry[n], entry[n]["playerPoolEntry"] for player's id, lineup slot
+   * id, full name, default position and sets for Player. creates Player object.
+   * calls parsing for player stats. adds fully parsed Player to Member roster
+   * vector */
+  auto &playerInfo = playerJson["playerPoolEntry"];
 
-          Player mPlayer = Player(playerId);
-          mPlayer.set_playerName(
-              parseNestedField(playerInfo, "player", "fullName"));
-          mPlayer.set_playerPos(
-              parseNestedField(playerInfo, "player", "defaultPositionId"));
-          for (const auto &stat : playerInfo["player"]["stats"]) {
-            if (parseStringOrIntField(stat, "seasonId") ==
-                    league_->get_seasonId() &&
-                parseStringOrIntField(stat, "scoringPeriodId") ==
-                    league_->get_scoringPeriodId() &&
-                parseStringOrIntField(stat, "statSourceId") == "1") {
-              auto playerProj = parseStringOrIntField(stat, "appliedTotal");
-              mPlayer.set_playerProj(playerProj);
-            }
-          }
-          member.add_player(mPlayer);
-        }
+  Player mPlayer = Player(parseStringOrIntField(playerJson, "playerId"),
+                          parseStringOrIntField(playerJson, "lineupSlotId"));
+  mPlayer.set_playerName(parseNestedField(playerInfo, "player", "fullName"));
+  mPlayer.set_playerPos(
+      parseNestedField(playerInfo, "player", "defaultPositionId"));
+  parse_playerStats(playerInfo["player"]["stats"], mPlayer);
+  member.add_player(mPlayer);
+}
+void Fantasy::parse_playerStats(const nlohmann::json &stats, Player &player) {
+  /* parses entry[n]["playerPoolEntry"]["player"]["stats"] for current applied
+   * total, and applied average and sets for Player */
+  for (const auto &stat : stats) {
+    if (parseStringOrIntField(stat, "seasonId") == league_->get_seasonId()) {
+      if (parseStringOrIntField(stat, "scoringPeriodId") ==
+              league_->get_scoringPeriodId() &&
+          parseStringOrIntField(stat, "statSourceId") == "1") {
+        player.set_playerProj(parseStringOrIntField(stat, "appliedTotal"));
+      }
+      if (parseStringOrIntField(stat, "scoringPeriodId") == "0" &&
+          parseStringOrIntField(stat, "statSourceId") == "0") {
+        player.set_playerAvg(parseStringOrIntField(stat, "appliedAverage"));
       }
     }
   }
