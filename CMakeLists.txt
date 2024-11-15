@@ -8,10 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add source files
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_SOURCE_DIR}/src/FantasyApi/Fantasy.cpp
-    ${CMAKE_SOURCE_DIR}/src/FantasyApi/Api.cpp 
     ${CMAKE_SOURCE_DIR}/src/App.cpp
     ${CMAKE_SOURCE_DIR}/src/ErrorHandler.cpp 
+    ${CMAKE_SOURCE_DIR}/src/Display.cpp 
+    ${CMAKE_SOURCE_DIR}/src/FantasyApi/Fantasy.cpp
+    ${CMAKE_SOURCE_DIR}/src/FantasyApi/Api.cpp 
     ${CMAKE_SOURCE_DIR}/src/Objects/League.cpp
     ${CMAKE_SOURCE_DIR}/src/Objects/Member.cpp
     ${CMAKE_SOURCE_DIR}/src/Objects/Player.cpp

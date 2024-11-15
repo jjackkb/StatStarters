@@ -21,14 +21,12 @@
   "d9y22QxB5PTgk%2Ffz28Ob3klAFVvjTHEuvKTEjqlRyY48fk0%3D"
 #define SWID "{A64813BD-1E7D-47C5-9E17-A7B7756D49DF}"
 
-std::string url_decode(const std::string &encoded);
+std::string url_decode(const std::string &);
 std::string construct_url(std::string);
 std::string construct_url(std::string, std::string);
 cpr::Response make_request(const std::string &);
-std::string parseStringOrIntField(const nlohmann::json &json,
-                                  const std::string &key);
-std::string parseNestedField(const nlohmann::json &json,
-                             const std::string &parent,
-                             const std::string &child);
+std::string parseStringOrIntField(const nlohmann::json &, const std::string &);
+std::string parseNestedField(const nlohmann::json &, const std::string &,
+                             const std::string &);
 
 #endif // API_H

@@ -17,10 +17,10 @@ public:
   void set_leagueName(const std::string &);
   void add_leagueMember(const Member &);
 
-  std::string get_leagueId();
-  std::string get_seasonId();
-  std::string get_scoringPeriodId();
-  std::string get_leagueName();
+  std::string get_leagueId() const;
+  std::string get_seasonId() const;
+  std::string get_scoringPeriodId() const;
+  std::string get_leagueName() const;
   std::vector<Member> &get_leagueMembers();
 
 private:

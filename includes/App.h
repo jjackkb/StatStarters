@@ -6,14 +6,13 @@
 #include <sstream>
 #include <string>
 
+#include "Display.h"
 #include "Fantasy.h"
 #include "League.h"
 
 class App {
 public:
   App();
-  void display_league();
-  std::string display_players(const Member &);
 
 private:
   std::unique_ptr<League> cur_league_;

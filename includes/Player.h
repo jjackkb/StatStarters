@@ -5,14 +5,14 @@
 
 class Player {
 public:
-  Player(const std::string &id);
-  Player(const std::string &id, const std::string &LineupPos);
+  Player(const std::string &);
+  Player(const std::string &, const std::string &);
 
-  void set_playerName(const std::string &name);
-  void set_playerPos(const std::string &pos);
-  void set_playerLineupPos(const std::string &lineupPos);
-  void set_playerProj(const std::string &proj);
-  void set_playerAvg(const std::string &avg);
+  void set_playerName(const std::string &);
+  void set_playerPos(const std::string &);
+  void set_playerLineupPos(const std::string &);
+  void set_playerProj(const std::string &);
+  void set_playerAvg(const std::string &);
 
   std::string get_playerId() const;
   std::string get_playerName() const;

@@ -6,7 +6,7 @@
 
 class Fantasy {
 public:
-  explicit Fantasy(League &league);
+  explicit Fantasy(League &);
 
 private:
   League *league_;

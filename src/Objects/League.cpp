@@ -16,16 +16,16 @@ void League::add_leagueMember(const Member &member) {
   leagueMembers_.emplace_back(member);
 }
 
-std::string League::get_leagueId() {
+std::string League::get_leagueId() const {
   return leagueId_.empty() ? "NULL" : leagueId_;
 }
-std::string League::get_seasonId() {
+std::string League::get_seasonId() const {
   return seasonId_.empty() ? "NULL" : seasonId_;
 }
-std::string League::get_scoringPeriodId() {
+std::string League::get_scoringPeriodId() const {
   return scoringPeriodId_.empty() ? "NULL" : scoringPeriodId_;
 }
-std::string League::get_leagueName() {
+std::string League::get_leagueName() const {
   return leagueName_.empty() ? "NULL" : leagueName_;
 }
 std::vector<Member> &League::get_leagueMembers() { return leagueMembers_; }

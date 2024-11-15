@@ -8,44 +8,5 @@ App::App()
     throw std::runtime_error("Failed to initialize App: cur_league_ is null.");
   }
 
-  display_league();
-}
-
-void App::display_league() {
-  std::ostringstream output;
-  output << "{ " << cur_league_->get_leagueId() << " - "
-         << cur_league_->get_leagueName()
-         << "\n season: " << cur_league_->get_seasonId()
-         << "\n scoring period: " << cur_league_->get_scoringPeriodId() << "\n";
-
-  std::cout << output.str() << std::endl;
-
-  const auto &league_members = cur_league_->get_leagueMembers();
-  for (const Member &m : league_members) {
-    std::cout << "  { " << m.get_memberAbbrev() << " - " << m.get_memberId()
-              << std::endl;
-    std::cout << display_players(m) << std::endl;
-  }
-  std::cout << "}" << std::endl;
-}
-
-std::string App::display_players(const Member &member) {
-  std::ostringstream output;
-  output << "   {\n";
-
-  for (Player &player : member.get_roster()) {
-    output << "    " << player.get_playerName() << " (" << player.get_playerId()
-           << ")"
-           << "\n      Position: " << player.get_playerPos()
-           << "\n      Lineup slot: " << player.get_playerLineupPos()
-           << "\n      Projected: " << player.get_playerProj()
-           << "\n      Average: " << player.get_playerAvg() << "\n\n";
-  }
-  std::string result = output.str();
-  if (!result.empty() && result.back() == '\n') {
-    result.pop_back(); // Removes the last '\n'
-  }
-
-  result += "   }\n  }";
-  return result;
+  std::cout << display_allLeague(*cur_league_) << std::endl;
 }
