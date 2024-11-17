@@ -5,10 +5,10 @@
 #include "League.h"
 
 class Fantasy {
-public:
+ public:
   explicit Fantasy(League &);
 
-private:
+ private:
   League *league_;
 
   void parse_seasonId(const nlohmann::json &);
@@ -22,4 +22,4 @@ private:
   void parse_playerStats(const nlohmann::json &, Player &);
 };
 
-#endif // FANTASY_H
+#endif  // FANTASY_H

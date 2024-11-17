@@ -3,4 +3,4 @@
 
 #include "App.h"
 
-#endif // MAIN_H
+#endif  // MAIN_H

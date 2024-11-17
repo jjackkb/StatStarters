@@ -3,19 +3,18 @@
 Member::Member() {}
 Member::Member(std::string &memberId) : memberId_(memberId) {}
 Member::Member(std::string &memberId, std::string &memberAbbrev)
-    : memberId_(memberId), memberAbbrev_(memberAbbrev) {}
+    : memberId_(memberId), memberAbbrev_(memberAbbrev)
+{
+}
 
 void Member::set_memberId(std::string &memberId) { memberId_ = memberId; }
-void Member::set_memberAbbrev(std::string &memberAbbrev) {
-  memberAbbrev_ = memberAbbrev;
-}
-void Member::add_player(Player player) {
+void Member::set_memberAbbrev(std::string &memberAbbrev) { memberAbbrev_ = memberAbbrev; }
+void Member::add_player(Player player)
+{
   auto it = std::lower_bound(
-      memberRoster_.begin(), memberRoster_.end(), player,
-      [](const Player &a, const Player &b) {
-        return std::stoi(a.get_playerLineupPos()) <
-               std::stoi(b.get_playerLineupPos());
-      }); // find insertion point for ascending order of playerLineupPos
+      memberRoster_.begin(), memberRoster_.end(), player, [](const Player &a, const Player &b) {
+        return std::stoi(a.get_playerLineupPos()) < std::stoi(b.get_playerLineupPos());
+      });  // find insertion point for ascending order of playerLineupPos
   memberRoster_.insert(it, player);
 }
 

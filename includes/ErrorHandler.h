@@ -6,4 +6,4 @@
 
 void logError(const std::string &);
 
-#endif // ERRORHANDLER_H
+#endif  // ERRORHANDLER_H

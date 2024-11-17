@@ -7,7 +7,7 @@
 #include "Member.h"
 
 class League {
-public:
+ public:
   League();
   League(const std::string &);
 
@@ -23,12 +23,12 @@ public:
   std::string get_leagueName() const;
   std::vector<Member> &get_leagueMembers();
 
-private:
+ private:
   std::string leagueId_;
   std::string seasonId_;
   std::string scoringPeriodId_;
   std::string leagueName_;
-  std::vector<Member> leagueMembers_; // {TEAM_ID, TEAM_ABBREV}
+  std::vector<Member> leagueMembers_;  // {TEAM_ID, TEAM_ABBREV}
 };
 
-#endif // LEAGUE_H
+#endif  // LEAGUE_H

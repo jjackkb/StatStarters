@@ -2,14 +2,15 @@
 #define API_H
 
 #include <cpr/cpr.h>
+
 #include <nlohmann/json.hpp>
 #include <string>
 
 #include "ErrorHandler.h"
 #include "League.h"
 
-#define BASEURL                                                                \
-  "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2024/"      \
+#define BASEURL                                                           \
+  "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2024/" \
   "segments/0/leagues/"
 #define ESPN_S2                                                                \
   "AEAuQPHDCe1hmHENca5DlLwqkOfMmg9QwnkubRLTvzHPN31qzhBnrDfBxLWC32TQaUiqKCdEts" \
@@ -26,7 +27,6 @@ std::string construct_url(std::string);
 std::string construct_url(std::string, std::string);
 cpr::Response make_request(const std::string &);
 std::string parseStringOrIntField(const nlohmann::json &, const std::string &);
-std::string parseNestedField(const nlohmann::json &, const std::string &,
-                             const std::string &);
+std::string parseNestedField(const nlohmann::json &, const std::string &, const std::string &);
 
-#endif // API_H
+#endif  // API_H

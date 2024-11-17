@@ -4,7 +4,7 @@
 #include <string>
 
 class Player {
-public:
+ public:
   Player(const std::string &);
   Player(const std::string &, const std::string &);
 
@@ -21,7 +21,7 @@ public:
   std::string get_playerProj() const;
   std::string get_playerAvg() const;
 
-private:
+ private:
   std::string playerId_;
   std::string playerName_;
   std::string playerPos_;
@@ -30,4 +30,4 @@ private:
   std::string playerAvg_;
 };
 
-#endif // PLAYER_H
+#endif  // PLAYER_H

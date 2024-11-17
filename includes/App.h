@@ -11,12 +11,12 @@
 #include "League.h"
 
 class App {
-public:
+ public:
   App();
 
-private:
+ private:
   std::unique_ptr<League> cur_league_;
   Fantasy *fantasy_;
 };
 
-#endif // APP_H
+#endif  // APP_H

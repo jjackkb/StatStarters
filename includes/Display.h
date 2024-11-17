@@ -13,4 +13,4 @@ std::string display_league(League &);
 std::string display_member(Member &);
 std::string display_player(Player &);
 
-#endif // DISPLAY_H
+#endif  // DISPLAY_H

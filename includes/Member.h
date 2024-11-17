@@ -8,7 +8,7 @@
 #include "Player.h"
 
 class Member {
-public:
+ public:
   Member();
   Member(std::string &);
   Member(std::string &, std::string &);
@@ -21,10 +21,10 @@ public:
   std::string get_memberAbbrev() const;
   std::vector<Player> get_roster() const;
 
-private:
+ private:
   std::string memberId_;
   std::string memberAbbrev_;
   std::vector<Player> memberRoster_;
 };
 
-#endif // MEMBER_H
+#endif  // MEMBER_H
