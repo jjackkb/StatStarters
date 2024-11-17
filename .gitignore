@@ -35,3 +35,5 @@
 .vscode/
 build/
 StatStarters.code-workspace
+.clang-format
+CMakePresets.json

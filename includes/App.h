@@ -3,20 +3,20 @@
 
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 
-#include "ESPNFantasyAPI.h"
+#include "Display.h"
+#include "Fantasy.h"
 #include "League.h"
 
 class App {
-public:
+ public:
   App();
-  ~App();
-  void display_league();
 
-private:
+ private:
   std::unique_ptr<League> cur_league_;
-  ESPNFantasyAPI *fantasyApi_;
+  Fantasy *fantasy_;
 };
 
-#endif // APP_H
+#endif  // APP_H
