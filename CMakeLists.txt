@@ -12,6 +12,7 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/App.cc
     ${CMAKE_SOURCE_DIR}/src/ErrorHandler.cc
     ${CMAKE_SOURCE_DIR}/src/Display.cc
+    ${CMAKE_SOURCE_DIR}/src/Optimize.cc
     ${CMAKE_SOURCE_DIR}/src/FantasyApi/Fantasy.cc
     ${CMAKE_SOURCE_DIR}/src/FantasyApi/Api.cc
     ${CMAKE_SOURCE_DIR}/src/Objects/League.cc
@@ -22,6 +23,7 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/includes/App.h
     ${CMAKE_SOURCE_DIR}/includes/ErrorHandler.h
     ${CMAKE_SOURCE_DIR}/includes/Display.h
+    ${CMAKE_SOURCE_DIR}/includes/Optimize.h
     ${CMAKE_SOURCE_DIR}/includes/Fantasy.h
     ${CMAKE_SOURCE_DIR}/includes/Api.h
     ${CMAKE_SOURCE_DIR}/includes/League.h

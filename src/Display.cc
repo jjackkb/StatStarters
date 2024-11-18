@@ -33,7 +33,24 @@ std::string display_allLeague(League &league)
     result.pop_back();
     result.pop_back();  // Removes the last two '\n'
   }
+
   return result;
+}
+
+std::string display_disadvantage(Member &mem1, Member &mem2)
+{
+  std::ostringstream output;
+  std::vector<Player> playerList = matchup_disadvantage(mem1, mem2);
+
+  output << mem1.get_memberAbbrev() << " vs " << mem2.get_memberAbbrev() << "\n";
+
+  for (int i = 0; i < playerList.size(); i = i + 2) {
+    output << playerList[i].get_playerPos() << ": " << playerList[i].get_playerName() << " ("
+           << playerList[i].get_playerProj() << ") < " << playerList[i + 1].get_playerName() << " ("
+           << playerList[i + 1].get_playerProj() << ")\n";
+  }
+
+  return output.str();
 }
 
 std::string display_league(League &league)
