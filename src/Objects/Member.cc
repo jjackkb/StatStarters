@@ -7,8 +7,9 @@ Member::Member(std::string &memberId, std::string &memberAbbrev)
 {
 }
 
-void Member::set_memberId(std::string &memberId) { memberId_ = memberId; }
-void Member::set_memberAbbrev(std::string &memberAbbrev) { memberAbbrev_ = memberAbbrev; }
+void Member::set_memberId(const std::string &memberId) { memberId_ = memberId; }
+void Member::set_memberAbbrev(const std::string &memberAbbrev) { memberAbbrev_ = memberAbbrev; }
+void Member::set_opponentId(const std::string &opponentId) { opponentId_ = opponentId; }
 void Member::add_player(Player player)
 {
   auto it = std::lower_bound(
@@ -20,4 +21,5 @@ void Member::add_player(Player player)
 
 std::string Member::get_memberId() const { return memberId_; }
 std::string Member::get_memberAbbrev() const { return memberAbbrev_; }
+std::string Member::get_opponentId() const { return opponentId_; }
 std::vector<Player> Member::get_roster() const { return memberRoster_; }

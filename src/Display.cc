@@ -9,7 +9,13 @@ std::string display_allLeague(League &league)
          << "\n scoring period: " << league.get_scoringPeriodId() << "\n members:\n\n";
 
   for (Member &member : league.get_leagueMembers()) {
-    output << "  " << display_member(member) << "\n   roster:\n\n";
+    std::string memberOutput = display_member(member);
+    std::istringstream memberLines(memberOutput);
+    std::string line;
+    while (std::getline(memberLines, line)) {
+      output << "  " << line << "\n";
+    }
+    output << "\n";
 
     for (Player &player : member.get_roster()) {
       std::string playerOutput = display_player(player);
@@ -51,7 +57,9 @@ std::string display_league(League &league)
 std::string display_member(Member &member)
 {
   std::ostringstream output;
-  output << member.get_memberAbbrev() << " (" << member.get_memberId() << ")";
+  output << member.get_memberAbbrev() << " (" << member.get_memberId()
+         << ")\n Opp: " << member.get_opponentId();
+
   return output.str();
 }
 

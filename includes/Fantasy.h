@@ -20,6 +20,7 @@ class Fantasy {
   void parse_roster(const nlohmann::json &, Member &);
   void parse_player(const nlohmann::json &, Member &);
   void parse_playerStats(const nlohmann::json &, Player &);
+  void parse_matchups(const nlohmann::json &);
 };
 
 #endif  // FANTASY_H

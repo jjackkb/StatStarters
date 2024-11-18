@@ -5,22 +5,26 @@ League *league_;
 Fantasy::Fantasy(League &league) : league_(&league)
 {
   /* sends request to espn fantasy api, parses various keys*/
-  auto r = make_request(construct_url(league_->get_leagueId()));
-  auto p = make_request(construct_url(league_->get_leagueId(), "?view=mRoster"));
+  auto leagueResponse = make_request(construct_url(league_->get_leagueId()));
+  auto rosterResponse = make_request(construct_url(league_->get_leagueId(), "?view=mRoster"));
+  auto matchupResponse = make_request(construct_url(league_->get_leagueId(), "?view=mMatchup"));
 
   try {
-    if (r.status_code == 200) {
-      auto json = nlohmann::json::parse(r.text);
-      auto rosterJson = nlohmann::json::parse(p.text);
+    if (leagueResponse.status_code == 200) {
+      auto json = nlohmann::json::parse(leagueResponse.text);
+      auto rosterJson = nlohmann::json::parse(rosterResponse.text);
+      auto matchupJson = nlohmann::json::parse(matchupResponse.text);
 
       parse_seasonId(json);
       parse_scoringPeriodId(json);
       parse_leagueName(json);
       parse_leagueMembers(json);
       parse_teams(rosterJson);
+      parse_matchups(matchupJson);
     }
     else {
-      logError("Failed to fetch league data. Status code: " + std::to_string(r.status_code));
+      logError("Failed to fetch league data. Status code: " +
+               std::to_string(leagueResponse.status_code));
     }
   }
   catch (const nlohmann::json::exception &e) {
@@ -135,6 +139,23 @@ void Fantasy::parse_playerStats(const nlohmann::json &stats, Player &player)
       if (parseStringOrIntField(stat, "scoringPeriodId") == "0" &&
           parseStringOrIntField(stat, "statSourceId") == "0") {
         player.set_playerAvg(parseStringOrIntField(stat, "appliedAverage"));
+      }
+    }
+  }
+}
+void Fantasy::parse_matchups(const nlohmann::json &matchupJson)
+{
+  auto &schedule = matchupJson["schedule"];
+
+  for (const auto &matchup : schedule) {
+    if (parseStringOrIntField(matchup, "matchupPeriodId") == league_->get_scoringPeriodId()) {
+      for (Member &member : league_->get_leagueMembers()) {
+        if (parseNestedField(matchup, "home", "teamId") == member.get_memberId()) {
+          member.set_opponentId(parseNestedField(matchup, "away", "teamId"));
+        }
+        if (parseNestedField(matchup, "away", "teamId") == member.get_memberId()) {
+          member.set_opponentId(parseNestedField(matchup, "home", "teamId"));
+        }
       }
     }
   }
