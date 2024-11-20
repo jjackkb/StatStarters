@@ -6,16 +6,15 @@
 #include <sstream>
 #include <string>
 
-#include "Display.h"
 #include "Fantasy.h"
 #include "League.h"
+#include "Ui.h"
 
 class App {
  public:
   App();
 
  private:
-  std::unique_ptr<League> cur_league_;
   Fantasy *fantasy_;
 };
 

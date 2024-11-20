@@ -1,16 +1,24 @@
 #ifndef FANTASY_H
 #define FANTASY_H
 
+class League;
+class Member;
+class Player;
+
+#include <nlohmann/json.hpp>
+
 #include "Api.h"
-#include "League.h"
 
 class Fantasy {
  public:
-  explicit Fantasy(League &);
-
- private:
   League *league_;
 
+  explicit Fantasy(League &league);
+  void retrieve_leagueInfo();
+  void retrieve_roster();
+  void retrieve_matchup();
+
+ private:
   void parse_seasonId(const nlohmann::json &);
   void parse_scoringPeriodId(const nlohmann::json &);
   void parse_leagueName(const nlohmann::json &);

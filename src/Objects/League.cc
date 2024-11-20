@@ -1,9 +1,6 @@
 #include "League.h"
 
-#include <iostream>
-
-League::League() {}
-League::League(const std::string &leagueId) : leagueId_(leagueId) {}
+League::League(const std::string &leagueId) : leagueId_(leagueId) { Fantasy(*this); }
 
 void League::set_leagueId(const std::string &leagueId) { leagueId_ = leagueId; }
 void League::set_seasonId(const std::string &seasonId) { seasonId_ = seasonId; }

@@ -11,22 +11,26 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/Main.cc
     ${CMAKE_SOURCE_DIR}/src/App.cc
     ${CMAKE_SOURCE_DIR}/src/ErrorHandler.cc
-    ${CMAKE_SOURCE_DIR}/src/Display.cc
     ${CMAKE_SOURCE_DIR}/src/FantasyApi/Fantasy.cc
     ${CMAKE_SOURCE_DIR}/src/FantasyApi/Api.cc
     ${CMAKE_SOURCE_DIR}/src/Objects/League.cc
     ${CMAKE_SOURCE_DIR}/src/Objects/Member.cc
     ${CMAKE_SOURCE_DIR}/src/Objects/Player.cc
+    ${CMAKE_SOURCE_DIR}/src/UI/Ui.cc
+    ${CMAKE_SOURCE_DIR}/src/UI/ProcessComm.cc
+    ${CMAKE_SOURCE_DIR}/src/UI/DisplayOutput.cc
    
     ${CMAKE_SOURCE_DIR}/includes/Main.h
     ${CMAKE_SOURCE_DIR}/includes/App.h
     ${CMAKE_SOURCE_DIR}/includes/ErrorHandler.h
-    ${CMAKE_SOURCE_DIR}/includes/Display.h
     ${CMAKE_SOURCE_DIR}/includes/Fantasy.h
     ${CMAKE_SOURCE_DIR}/includes/Api.h
     ${CMAKE_SOURCE_DIR}/includes/League.h
     ${CMAKE_SOURCE_DIR}/includes/Member.h
     ${CMAKE_SOURCE_DIR}/includes/Player.h
+    ${CMAKE_SOURCE_DIR}/includes/Ui.h
+    ${CMAKE_SOURCE_DIR}/includes/ProcessComm.h
+    ${CMAKE_SOURCE_DIR}/includes/DisplayOutput.h
 )
 
 # Create the executable
@@ -56,6 +60,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
+# Find and link ncurses
+find_library(NCURSES_LIBRARY ncurses REQUIRED)
+if(NCURSES_LIBRARY)
+    message(STATUS "Found ncurses: ${NCURSES_LIBRARY}")
+else()
+    message(FATAL_ERROR "ncurses library not found")
+endif()
+
 # Link libraries
 find_library(CORESERVICES CoreServices)
-target_link_libraries(StatStarters PRIVATE cpr::cpr nlohmann_json::nlohmann_json ${CORESERVICES})
+target_link_libraries(StatStarters PRIVATE cpr::cpr nlohmann_json::nlohmann_json ${CORESERVICES} ${NCURSES_LIBRARY})

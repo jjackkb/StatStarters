@@ -1,30 +1,56 @@
 #include "Fantasy.h"
 
-League *league_;
+Fantasy::Fantasy(League &league) : league_(&league) {}
 
-Fantasy::Fantasy(League &league) : league_(&league)
+void Fantasy::retrieve_leagueInfo()
 {
-  /* sends request to espn fantasy api, parses various keys*/
   auto leagueResponse = make_request(construct_url(league_->get_leagueId()));
-  auto rosterResponse = make_request(construct_url(league_->get_leagueId(), "?view=mRoster"));
-  auto matchupResponse = make_request(construct_url(league_->get_leagueId(), "?view=mMatchup"));
-
   try {
     if (leagueResponse.status_code == 200) {
       auto json = nlohmann::json::parse(leagueResponse.text);
-      auto rosterJson = nlohmann::json::parse(rosterResponse.text);
-      auto matchupJson = nlohmann::json::parse(matchupResponse.text);
 
       parse_seasonId(json);
       parse_scoringPeriodId(json);
       parse_leagueName(json);
       parse_leagueMembers(json);
-      parse_teams(rosterJson);
-      parse_matchups(matchupJson);
     }
-    else {
-      logError("Failed to fetch league data. Status code: " +
-               std::to_string(leagueResponse.status_code));
+  }
+  catch (const nlohmann::json::exception &e) {
+    e.~exception();
+    logError("Error: Ran into error while parsing during Fantasy init.");
+  }
+  catch (const std::exception &e) {
+    logError("Error: Ran into unknown error during Fantasy init.");
+  }
+}
+
+void Fantasy::retrieve_roster()
+{
+  auto rosterResponse = make_request(construct_url(league_->get_leagueId(), "?view=mRoster"));
+  try {
+    if (rosterResponse.status_code == 200) {
+      auto rosterJson = nlohmann::json::parse(rosterResponse.text);
+
+      parse_teams(rosterJson);
+    }
+  }
+  catch (const nlohmann::json::exception &e) {
+    e.~exception();
+    logError("Error: Ran into error while parsing during Fantasy init.");
+  }
+  catch (const std::exception &e) {
+    logError("Error: Ran into unknown error during Fantasy init.");
+  }
+}
+
+void Fantasy::retrieve_matchup()
+{
+  auto matchupResponse = make_request(construct_url(league_->get_leagueId(), "?view=mMatchup"));
+  try {
+    if (matchupResponse.status_code == 200) {
+      auto matchupJson = nlohmann::json::parse(matchupResponse.text);
+
+      parse_matchups(matchupJson);
     }
   }
   catch (const nlohmann::json::exception &e) {

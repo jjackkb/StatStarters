@@ -4,11 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "Fantasy.h"
 #include "Member.h"
 
 class League {
  public:
-  League();
   League(const std::string &);
 
   void set_leagueId(const std::string &);
