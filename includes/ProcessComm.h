@@ -14,4 +14,6 @@ extern League *cur_league;
 
 void process_command(std::string);
 
+void display_help();
+
 #endif  //  PROCESS_COMM_H

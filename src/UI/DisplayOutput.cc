@@ -2,6 +2,8 @@
 
 void display_output(std::string output_str)
 {
+  curs_set(0);
+
   std::stringstream outputLines(output_str);
   std::string line;
   int y = 0;
@@ -13,6 +15,8 @@ void display_output(std::string output_str)
   }
 
   refreshScreen();
+
+  curs_set(1);
 }
 
 void display_err(std::string err_str)

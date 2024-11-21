@@ -22,8 +22,11 @@ void process_command(std::string input_command)
   clearInput();
 
   if (commands.size() > 0) {
-    if (commands[0] == "test") {
-      display_output("test");
+    if (commands[0] == "help") {
+      display_help();
+    }
+    else if (commands[0] == "quit") {
+      quit = 1;
     }
     else {
       display_err("Command '" + commands[0] + "' not found!");
@@ -32,4 +35,14 @@ void process_command(std::string input_command)
   else {
     display_err("No command entered!");
   }
+}
+
+void display_help()
+{
+  std::ostringstream output;
+
+  output << "help: show this menu\n"
+         << "quit: quit and exit application";
+
+  display_output(output.str());
 }

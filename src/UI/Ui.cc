@@ -80,6 +80,12 @@ void getInput()
       input.clear();
     }
   }
+
+  if (quit == 1) {
+    clear();
+    refreshScreen();
+    destroy();
+  }
 }
 
 void destroy() { endwin(); }
